@@ -5,30 +5,74 @@
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
+require 'yaml'
+machines = YAML.load_file("setup.yml")
+
 Vagrant.configure("2") do |config|
+	machines.each do |machine|
+	config.vm.define machine['name'] do |machine_vm|
+		set_box(machine, machine_vm)
+		set_cpus_and_memory(machine, machine_vm)
+		update_with_package_manager(machine, machine_vm)
+		run_install_scripts(machine, machine_vm)
+		
+		end
+	end
+end
+
+def set_cpus_and_memory(machine, machine_vm)
+	machine_vm.vm.provider "virtualbox" do |vb|
+		vb.cpus = machine['cpus']
+		vb.memory = machine['memory']
+		
+	end
+end
+
+def set_box(machine, machine_vm)
+	machine_vm.vm.box = machine['box']
+end
+
+def update_with_package_manager(machine, machine_vm)
+	unless machine['package_manager'].nil?
+		machine_vm.vm.provision "shell", inline: "sudo #{machine['package_manager']} update -y"
+		if machine['package_manager'] == "yum"
+			machine_vm.vm.provision "shell", inline: "sudo #{machine['package_manager']} upgrade -y"
+		end
+	end
+end
+
+def run_install_scripts(machine, machine_vm)
+	unless machine['scripts'].nil?
+		machine['scripts'].each do |script|
+  			machine_vm.vm.provision "shell", privileged: false, path: "vagrant_scripts/#{script}"
+		end
+	end
+end
+
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.define "jenkins" do |jenkins|
-	jenkins.vm.box = "centos/7"
-	jenkins.vm.provider "virtualbox" do |vb|
-		vb.memory = "2048"
-		vb.cpus = "2"
-	end
-	config.vm.provision "shell", path: "vagrant_scripts/install_server"
-  end 
+ # machine.each do |machine|
+	 # config.vm.define "#machine[jenkins]" do |jenkins| new_vm 
+	#	jenkins.vm.box = "centos/7"
+	#	jenkins.vm.provider "virtualbox" do |vb|
+	#		vb.memory = "2048"
+	#		vb.cpus = "2"
+	#	end
+	#	config.vm.provision "shell", path: "vagrant_scripts/install_server"
+	#  end 
 	
-  config.vm.define "server" do |server|
-	server.vm.box = "centos/7"
-	server.vm.provider "virtualbox" do |vb|
-		vb.memory = "2048"
-		vb.cpus = "2"
-	end
-	config.vm.provision "shell", path: "vagrant_scripts/install_server"
-  end 
+  #config.vm.define "server" do |server|
+	#server.vm.box = "centos/7"
+	#server.vm.provider "virtualbox" do |vb|
+	#	vb.memory = "2048"
+	#	vb.cpus = "2"
+	#end
+	#config.vm.provision "shell", path: "vagrant_scripts/install_server"
+  #end 
 	
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
@@ -39,7 +83,7 @@ Vagrant.configure("2") do |config|
   # within the machine from a port on the host machine. In the example below,
   # accessing "localhost:8080" will access port 80 on the guest machine.
   # NOTE: This will enable public access to the opened port
-   config.vm.network "forwarded_port", guest: 9000, host: 8000
+   #config.vm.network "forwarded_port", guest: 9000, host: 8000
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine and only allow access
@@ -77,4 +121,3 @@ Vagrant.configure("2") do |config|
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
    #config.vm.provision "shell", inline: <<-SHELL
-end

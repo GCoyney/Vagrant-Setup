@@ -15,6 +15,8 @@ Vagrant.configure("2") do |config|
 		set_cpus_and_memory(machine, machine_vm)
 		update_with_package_manager(machine, machine_vm)
 		run_install_scripts(machine, machine_vm)
+		set_port_fwd(machine, machine_vm)
+		install_packages(machine, machine_vm)
 		
 		end
 	end
@@ -41,6 +43,20 @@ def update_with_package_manager(machine, machine_vm)
 	end
 end
 
+def install_packages(machine, machine_vm)
+	unless machine['packages'].nil?
+		if machine['package_manager'] == "yum"
+			machine_vm.vm.provision "shell", inline: <<-SHELL
+				sudo #{machine['package_manager']} add #{machine['packages'].join(" ")}
+			SHELL
+		else
+			machine_vm.vm.provision "shell", inline: <<-SHELL
+				sudo #{machine['package_manager']} install -y #{machine['packages'].join(" ")}
+			SHELL
+		end
+	end
+end
+
 def run_install_scripts(machine, machine_vm)
 	unless machine['scripts'].nil?
 		machine['scripts'].each do |script|
@@ -49,6 +65,9 @@ def run_install_scripts(machine, machine_vm)
 	end
 end
 
+def set_port_fwd(machine, machine_vm)
+	machine_vm.vm.network "forwarded_port", guest: 9000, host: machine['port']
+end
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.

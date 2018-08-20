@@ -2,7 +2,7 @@
 Vagrant project using a Yaml file to manage virtual machines in VirtualBox.
 
 # New Machines
-Guest machines are defined within the (setup.yml) file. 
+Guest machines are defined within the [setup.yml] file. 
 The name, box, cpus, memory, package_manager, port, packages, scripts 
 ```sh
 - name: jenkins

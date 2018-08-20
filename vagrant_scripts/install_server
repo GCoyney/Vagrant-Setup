@@ -1,0 +1,12 @@
+#!/bin/bash
+
+yum update
+yum install -y apache2
+sudo yum install -y git
+sudo useradd jenkins
+sudo usermod -aG wheel jenkins
+sudo su - jenkins
+git clone https://github.com/bob-crutchley/python-systemd-http-server.git && cd python-systemd-http-server
+sudo make install
+sudo systemctl start python-systemd-http-server.service
+sudo systemctl enable python-systemd-http-server.service

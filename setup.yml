@@ -9,7 +9,10 @@
   - git
   scripts: 
   - install_server
-  
+  synced_folders: 
+  - host: C:\Users\Admin\Desktop\Shared
+    machine: /home/jenkins/shared
+    
 - name: server
   box: centos/7
   cpus: 2
@@ -20,4 +23,8 @@
   - git
   scripts: 
   - install_server
+  synced_folders:
+  - host: C:\Users\Admin\Desktop\Shared
+    machine: /home/jenkins/shared
+    
 ...

@@ -17,6 +17,7 @@ Vagrant.configure("2") do |config|
 		run_install_scripts(machine, machine_vm)
 		set_port_fwd(machine, machine_vm)
 		install_packages(machine, machine_vm)
+		set_synced_folders(machine, machine_vm)
 		
 		end
 	end
@@ -37,17 +38,25 @@ end
 def update_with_package_manager(machine, machine_vm)
 	unless machine['package_manager'].nil?
 		machine_vm.vm.provision "shell", inline: "sudo #{machine['package_manager']} update -y"
-		if machine['package_manager'] == "yum"
-			machine_vm.vm.provision "shell", inline: "sudo #{machine['package_manager']} upgrade -y"
+		if machine['package_manager'] == "yum" or "apt-get"
+			machine_vm.vm.provision "shell", inline: "sudo #{machine['package_manager']} update -y"
+		end
+	end
+end
+
+def set_synced_folders(machine, machine_vm)
+	unless machine['synced_folders'].nil?
+		machine['synced_folders'].each do |synced_folder|
+			machine_vm.vm.synced_folder synced_folder['host'], synced_folder['machine']
 		end
 	end
 end
 
 def install_packages(machine, machine_vm)
 	unless machine['packages'].nil?
-		if machine['package_manager'] == "yum"
+		if machine['package_manager'] == "yum" or "apt-get"
 			machine_vm.vm.provision "shell", inline: <<-SHELL
-				sudo #{machine['package_manager']} add #{machine['packages'].join(" ")}
+				sudo #{machine['package_manager']} install -y #{machine['packages'].join(" ")}
 			SHELL
 		else
 			machine_vm.vm.provision "shell", inline: <<-SHELL

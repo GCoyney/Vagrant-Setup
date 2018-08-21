@@ -1,12 +1,24 @@
 #!/bin/bash
 
 yum update
+echo UPDATED ---------------------------------------------------
 yum install -y apache2
+echo INSTALLED APACHE ----------------------------------------------------
 sudo yum install -y git
+echo YUM INSTALL GIT SUCCESSFUL -------------------------------------------
 sudo useradd jenkins
+echo USER ADD SUCCESSFUL -------------------------------------------------
 sudo usermod -aG wheel jenkins
+echo USERMOD SUCCESSFUL --------------------------------------------
 sudo su - jenkins
+echo JENKINS LOGIN SUCCESSFUL ----------------------------------------------
+mkdir shared
+echo SHARED FOLDER CREATED -----------------------------------------------
 git clone https://github.com/bob-crutchley/python-systemd-http-server.git && cd python-systemd-http-server
+echo CLONE SUCESSFULL ----------------------------------------------------
 sudo make install
+echo MAKE INSTALL SUCCESSFUL ------------------------------------------------------
 sudo systemctl start python-systemd-http-server.service
+echo PYTHON SERVER STARTED ---------------------------------------------------------
 sudo systemctl enable python-systemd-http-server.service
+echo PYTHON SERVER ENABLED ------------------------------------------------------

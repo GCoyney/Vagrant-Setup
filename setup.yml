@@ -7,6 +7,8 @@
   port: 8082
   packages:
   - git
+  - nano
+  - wget
   scripts: 
   - install_server
   synced_folders: 
@@ -21,10 +23,11 @@
   port: 8081
   packages:
   - git
+  - nano
+  - wget
   scripts: 
   - install_server
   synced_folders:
   - host: C:\Users\Admin\Desktop\Shared
     machine: /home/jenkins/shared
-    
 ...

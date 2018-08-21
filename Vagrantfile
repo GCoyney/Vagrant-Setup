@@ -5,8 +5,19 @@
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
+require 'rubygems'
+require 'json'
 require 'yaml'
-machines = YAML.load_file("setup.yml")
+
+filename = "setup"
+
+if File.file? "#{filename}.json"
+	machines = JSON.parse(File.read("#{filename}.json"))
+else
+	machines = YAML.load_file("#{filename}.yml")
+end
+
+
 
 Vagrant.configure("2") do |config|
 	machines.each do |machine|
@@ -77,6 +88,8 @@ end
 def set_port_fwd(machine, machine_vm)
 	machine_vm.vm.network "forwarded_port", guest: 9000, host: machine['port']
 end
+
+
   # The most common configuration options are documented and commented below.
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.

@@ -1,0 +1,30 @@
+---
+- name: jenkins
+  box: centos/7
+  cpus: 2
+  memory: 2048
+  package_manager: yum
+  port: 8082
+  packages:
+  - git
+  scripts: 
+  - install_server
+  synced_folders: 
+  - host: C:\Users\Admin\Desktop\Shared
+    machine: /home/jenkins/shared
+    
+- name: server
+  box: centos/7
+  cpus: 2
+  memory: 2048
+  package_manager: yum
+  port: 8081
+  packages:
+  - git
+  scripts: 
+  - install_server
+  synced_folders:
+  - host: C:\Users\Admin\Desktop\Shared
+    machine: /home/jenkins/shared
+    
+...

@@ -17,6 +17,7 @@ The name, box, cpus, memory, package_manager, port, packages, scripts
   - install_server
 ```
 # Machine Properties
+Remove either the Json or the Yaml file.
 # Required
 - name
 The name is how you can interact with the guest via Vagrant, for example to only start the virtual machine called default you could run vagrant up default
